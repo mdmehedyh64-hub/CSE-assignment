@@ -1,0 +1,338 @@
+1.
+public class welcome{
+    public static void main(String[] args) {
+        System.out.println("Welcome to PUB CSE Fest-26!");
+        System.out.println("Code. Compete. Celebrate.");
+    }
+}
+
+2.
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int T = sc.nextInt();
+
+        for (int i = 0; i < T; i++) {
+
+            long N = sc.nextLong();
+            long V = sc.nextLong();
+            long J = sc.nextLong();
+            long K = sc.nextLong();
+            long C = sc.nextLong();
+
+            long people = 3 * N + V + J;
+
+            long packs = (people + K - 1) / K;
+
+            long cost = packs * C;
+
+            System.out.println(packs + " " + cost);
+        }
+
+        sc.close();
+    }
+}
+
+3.
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int T = sc.nextInt();
+
+        for (int i = 0; i < T; i++) {
+
+            String s = sc.next();
+
+            boolean valid = true;
+
+            // Rule 1: ID must have exactly 11 characters
+            if (s.length() != 11) {
+                valid = false;
+            }
+
+            if (valid) {
+
+                // Rule 2 and 3: Check CSE and hyphens
+                if (!s.substring(0, 3).equals("CSE")
+                        || s.charAt(3) != '-'
+                        || s.charAt(6) != '-') {
+                    valid = false;
+                }
+            }
+
+            if (valid) {
+
+                // Rule 4: Check year digits
+                if (!Character.isDigit(s.charAt(4))
+                        || !Character.isDigit(s.charAt(5))) {
+                    valid = false;
+                }
+
+                // Check year range
+                if (valid) {
+                    int year = Integer.parseInt(s.substring(4, 6));
+
+                    if (year < 20 || year > 26) {
+                        valid = false;
+                    }
+                }
+
+                // Rule 5: Check last four digits
+                for (int j = 7; j < 11; j++) {
+                    if (!Character.isDigit(s.charAt(j))) {
+                        valid = false;
+                    }
+                }
+
+                if (s.substring(7, 11).equals("0000")) {
+                    valid = false;
+                }
+            }
+
+            if (valid) {
+                System.out.println("VALID");
+            } else {
+                System.out.println("INVALID");
+            }
+        }
+
+        sc.close();
+    }
+}
+
+4.
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+
+        char[][] grid = new char[n][m];
+
+        int row = 0, col = 0;
+
+        // Input the grid
+        for (int i = 0; i < n; i++) {
+            String s = sc.next();
+            for (int j = 0; j < m; j++) {
+                grid[i][j] = s.charAt(j);
+
+                if (grid[i][j] == 'S') {
+                    row = i;
+                    col = j;
+                }
+            }
+        }
+
+        int k = sc.nextInt();
+        String commands = sc.next();
+
+        // Track visited cells
+        boolean[][] visited = new boolean[n][m];
+        visited[row][col] = true;
+
+        // Execute commands
+        for (int i = 0; i < k; i++) {
+
+            int newRow = row;
+            int newCol = col;
+
+            char move = commands.charAt(i);
+
+            if (move == 'U') {
+                newRow--;
+            } 
+            else if (move == 'D') {
+                newRow++;
+            } 
+            else if (move == 'L') {
+                newCol--;
+            } 
+            else if (move == 'R') {
+                newCol++;
+            }
+
+            // Check boundaries and desks
+            if (newRow >= 0 && newRow < n &&
+                newCol >= 0 && newCol < m &&
+                grid[newRow][newCol] != '#') {
+
+                row = newRow;
+                col = newCol;
+
+                visited[row][col] = true;
+            }
+        }
+
+        // Count different visited cells
+        int count = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (visited[i][j]) {
+                    count++;
+                }
+            }
+        }
+
+        // Output (convert to 1-based indexing)
+        System.out.println((row + 1) + " " + (col + 1));
+        System.out.println(count);
+
+        sc.close();
+    }
+}
+
+5.
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int T = sc.nextInt();
+        int P = sc.nextInt();
+        int N = sc.nextInt();
+
+        boolean[][] solved = new boolean[T + 1][P];
+        int[][] wrong = new int[T + 1][P];
+
+        int[] solveCount = new int[T + 1];
+        long[] penalty = new long[T + 1];
+
+        // Read all submissions
+        for (int i = 0; i < N; i++) {
+            int minute = sc.nextInt();
+            int team = sc.nextInt();
+            char problem = sc.next().charAt(0);
+            String verdict = sc.next();
+
+            int p = problem - 'A';
+
+            // Ignore submissions after the first AC
+            if (solved[team][p]) {
+                continue;
+            }
+
+            if (verdict.equals("AC")) {
+                solved[team][p] = true;
+
+                solveCount[team]++;
+
+                penalty[team] += minute + 20L * wrong[team][p];
+            }
+            else if (verdict.equals("WA") ||
+                     verdict.equals("TLE") ||
+                     verdict.equals("RE")) {
+
+                wrong[team][p]++;
+            }
+
+            // CE does nothing
+        }
+
+        // Find the winner
+        int winner = 1;
+
+        for (int team = 1; team <= T; team++) {
+
+            if (solveCount[team] > solveCount[winner]) {
+                winner = team;
+            }
+            else if (solveCount[team] == solveCount[winner]) {
+
+                if (penalty[team] < penalty[winner]) {
+                    winner = team;
+                }
+                else if (penalty[team] == penalty[winner] &&
+                         team < winner) {
+                    winner = team;
+                }
+            }
+        }
+
+        // Print each team's result
+        for (int team = 1; team <= T; team++) {
+            System.out.println(solveCount[team] + " " + penalty[team]);
+        }
+
+        // Print winner
+        System.out.println(winner);
+
+        sc.close();
+    }
+}
+
+6.
+import java.util.Scanner;
+
+public class main {
+
+    // Decrypt a string using a Caesar cipher
+    public static String decrypt(String s, int k) {
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < s.length(); i++) {
+
+            char ch = s.charAt(i);
+
+            // Decrypt uppercase letters
+            if (ch >= 'A' && ch <= 'Z') {
+                ch = (char) ('A' + (ch - 'A' - k + 26) % 26);
+            }
+
+            // Decrypt lowercase letters
+            else if (ch >= 'a' && ch <= 'z') {
+                ch = (char) ('a' + (ch - 'a' - k + 26) % 26);
+            }
+
+            // Other characters remain unchanged
+            result.append(ch);
+        }
+
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int T = Integer.parseInt(sc.nextLine());
+
+        for (int i = 0; i < T; i++) {
+
+            String encrypted = sc.nextLine();
+
+            // Try every possible secret key
+            for (int k = 0; k <= 25; k++) {
+
+                String decrypted = decrypt(encrypted, k);
+
+                // Original string must end with "Coder"
+                if (decrypted.endsWith("Coder")) {
+
+                    System.out.println(decrypted);
+                    break;
+                }
+            }
+        }
+
+        sc.close();
+    }
+}
